@@ -1,0 +1,287 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgres://neondb_owner:npg_0VhXlyb7mjKT@ep-muddy-thunder-a4onx450-pooler.us-east-1.aws.neon.tech/neondb?connect_timeout=15&sslmode=require"
+}
+
+model users {
+  id                                                  Int                @id @default(autoincrement())
+  first_name                                          String?            @db.VarChar(191)
+  last_name                                           String?            @db.VarChar(191)
+  email                                               String?            @db.VarChar(191)
+  picture                                             String?            @db.VarChar(191)
+  password                                            String?            @db.VarChar(191)
+  password_token                                      String?            @db.VarChar(256)
+  created_at                                          DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at                                          DateTime?          @db.Timestamp(6)
+  role                                                String?            @db.VarChar(100)
+  active                                              Boolean?           @default(true)
+  company_id                                          Int?
+  sales_rep_object                                    Json?              @db.Json
+  payment_terms_object                                Json?              @db.Json
+  categories_categories_created_byTousers             categories[]       @relation("categories_created_byTousers")
+  categories_categories_updated_byTousers             categories[]       @relation("categories_updated_byTousers")
+  client_users                                        client_users[]
+  clients_clients_created_byTousers                   clients[]          @relation("clients_created_byTousers")
+  clients_clients_updated_byTousers                   clients[]          @relation("clients_updated_byTousers")
+  modules_modules_created_byTousers                   modules[]          @relation("modules_created_byTousers")
+  modules_modules_updated_byTousers                   modules[]          @relation("modules_updated_byTousers")
+  orders_orders_created_byTousers                     orders[]           @relation("orders_created_byTousers")
+  orders_orders_updated_byTousers                     orders[]           @relation("orders_updated_byTousers")
+  permission_roles_permission_roles_created_byTousers permission_roles[] @relation("permission_roles_created_byTousers")
+  permission_roles_permission_roles_updated_byTousers permission_roles[] @relation("permission_roles_updated_byTousers")
+  permissions_permissions_created_byTousers           permissions[]      @relation("permissions_created_byTousers")
+  permissions_permissions_updated_byTousers           permissions[]      @relation("permissions_updated_byTousers")
+  products_products_created_byTousers                 products[]         @relation("products_created_byTousers")
+  products_products_updated_byTousers                 products[]         @relation("products_updated_byTousers")
+  roles_roles_created_byTousers                       roles[]            @relation("roles_created_byTousers")
+  roles_roles_updated_byTousers                       roles[]            @relation("roles_updated_byTousers")
+  user_roles_user_roles_created_byTousers             user_roles[]       @relation("user_roles_created_byTousers")
+  user_roles_user_roles_updated_byTousers             user_roles[]       @relation("user_roles_updated_byTousers")
+  user_roles_user_roles_user_idTousers                user_roles[]       @relation("user_roles_user_idTousers")
+  companies                                           companies?         @relation(fields: [company_id], references: [id], onDelete: Cascade)
+}
+
+model modules {
+  id                              Int                @id @default(autoincrement())
+  name                            String?            @db.VarChar(191)
+  key                             String?            @db.VarChar(50)
+  created_at                      DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at                      DateTime?          @db.Timestamp(6)
+  created_by                      Int?
+  updated_by                      Int?
+  active                          Boolean?           @default(true)
+  users_modules_created_byTousers users?             @relation("modules_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade)
+  users_modules_updated_byTousers users?             @relation("modules_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade)
+  permission_roles                permission_roles[]
+}
+
+model permission_roles {
+  id                                       Int          @id @default(autoincrement())
+  role_id                                  Int?
+  permission_id                            Int?
+  module_id                                Int?
+  created_at                               DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at                               DateTime?    @db.Timestamp(6)
+  created_by                               Int?
+  updated_by                               Int?
+  users_permission_roles_created_byTousers users?       @relation("permission_roles_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade)
+  modules                                  modules?     @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  permissions                              permissions? @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+  roles                                    roles?       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  users_permission_roles_updated_byTousers users?       @relation("permission_roles_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade)
+}
+
+model permissions {
+  id                                  Int                @id @default(autoincrement())
+  name                                String?            @db.VarChar(191)
+  key                                 String?            @db.VarChar(50)
+  created_at                          DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at                          DateTime?          @db.Timestamp(6)
+  created_by                          Int?
+  updated_by                          Int?
+  active                              Boolean?           @default(true)
+  permission_roles                    permission_roles[]
+  users_permissions_created_byTousers users?             @relation("permissions_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade)
+  users_permissions_updated_byTousers users?             @relation("permissions_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade)
+}
+
+model roles {
+  id                            Int                @id @default(autoincrement())
+  name                          String?            @db.VarChar(191)
+  key                           String?            @db.VarChar(50)
+  created_at                    DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at                    DateTime?          @db.Timestamp(6)
+  created_by                    Int?
+  updated_by                    Int?
+  permission_roles              permission_roles[]
+  users_roles_created_byTousers users?             @relation("roles_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade)
+  users_roles_updated_byTousers users?             @relation("roles_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade)
+  user_roles                    user_roles[]
+}
+
+model user_roles {
+  id                                 Int       @id @default(autoincrement())
+  user_id                            Int?
+  role_id                            Int?
+  created_at                         DateTime? @default(now()) @db.Timestamp(6)
+  updated_at                         DateTime? @db.Timestamp(6)
+  created_by                         Int?
+  updated_by                         Int?
+  users_user_roles_created_byTousers users?    @relation("user_roles_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade)
+  roles                              roles?    @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  users_user_roles_updated_byTousers users?    @relation("user_roles_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade)
+  users_user_roles_user_idTousers    users?    @relation("user_roles_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model products {
+  id                               Int              @id @default(autoincrement())
+  sku                              String?          @db.VarChar(50)
+  brand                            String?          @db.VarChar(50)
+  title                            String?          @db.VarChar(191)
+  description                      String?
+  quantity                         Int?
+  image                            String?          @db.VarChar(191)
+  data                             Json?            @db.Json
+  created_at                       DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at                       DateTime?        @db.Timestamp(6)
+  created_by                       Int?
+  updated_by                       Int?
+  active                           Boolean?         @default(true)
+  default_price                    Float?           @db.Real
+  customer_price                   Float?           @db.Real
+  category                         String?          @db.VarChar(50)
+  odoo                             Json?            @db.Json
+  odoo_id                          String?          @db.VarChar(100)
+  company_id                       Int?
+  category_id                      Int?
+  odoo_id_alt                      String?          @db.VarChar(100)
+  type                             String?          @db.VarChar(100)
+  order_products                   order_products[]
+  companies                        companies?       @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  users_products_created_byTousers users?           @relation("products_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade, map: "products_created_by")
+  users_products_updated_byTousers users?           @relation("products_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade, map: "products_updated_by")
+}
+
+model clients {
+  id                              Int             @id @default(autoincrement())
+  name                            String?         @db.VarChar(100)
+  address                         String?         @db.VarChar(191)
+  phone                           String?         @db.VarChar(15)
+  email                           String?         @db.VarChar(191)
+  picture                         String?         @db.VarChar(191)
+  data                            Json?           @db.Json
+  created_at                      DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at                      DateTime?       @db.Timestamp(6)
+  created_by                      Int?
+  updated_by                      Int?
+  odoo                            Json?           @db.Json
+  odoo_id                         String?         @db.VarChar(100)
+  company_id                      Int?
+  sales_rep_odoo_id               Int?
+  addresses                       addresses[]
+  client_users                    client_users[]
+  companies                       companies?      @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  users_clients_created_byTousers users?          @relation("clients_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade, map: "clients_created_by")
+  users_clients_updated_byTousers users?          @relation("clients_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade, map: "clients_updated_by")
+  order_clients                   order_clients[]
+  orders                          orders[]
+}
+
+model orders {
+  id                             Int              @id @default(autoincrement())
+  client_id                      Int?
+  order_number                   String?          @db.VarChar(100)
+  total                          Float?           @db.Real
+  data                           Json?            @db.Json
+  created_at                     DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at                     DateTime?        @db.Timestamp(6)
+  created_by                     Int?
+  updated_by                     Int?
+  active                         Boolean?         @default(true)
+  odoo_id                        String?          @db.VarChar(100)
+  company_id                     Int?
+  status                         String?          @default("draft") @db.VarChar(100)
+  state                          String?          @db.VarChar(100)
+  order_clients                  order_clients[]
+  order_products                 order_products[]
+  clients                        clients?         @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  companies                      companies?       @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  users_orders_created_byTousers users?           @relation("orders_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade)
+  users_orders_updated_byTousers users?           @relation("orders_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade)
+}
+
+model client_users {
+  id        Int      @id @default(autoincrement())
+  client_id Int?
+  user_id   Int?
+  clients   clients? @relation(fields: [client_id], references: [id], onDelete: Cascade, map: "client_users_clinet_id_fkey")
+  users     users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model order_clients {
+  id        Int      @id @default(autoincrement())
+  order_id  Int?
+  client_id Int?
+  clients   clients? @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  orders    orders?  @relation(fields: [order_id], references: [id], onDelete: Cascade)
+}
+
+model companies {
+  id         Int          @id @default(autoincrement())
+  name       String?      @db.VarChar(191)
+  created_at DateTime?    @db.Timestamp(6)
+  updated_at DateTime?    @db.Timestamp(6)
+  active     Boolean?
+  odoo_id    Int?
+  categories categories[]
+  clients    clients[]
+  orders     orders[]
+  products   products[]
+  users      users[]
+}
+
+model order_products {
+  id         Int       @id @default(autoincrement())
+  order_id   Int?
+  product_id Int?
+  quantity   Int?
+  price      Float?    @db.Real
+  total      Float?    @db.Real
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  orders     orders?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  products   products? @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
+
+model sales_reps {
+  id         Int       @id @default(autoincrement())
+  name       String?   @db.VarChar(100)
+  odoo_id    Int?
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  active     Boolean?  @default(true)
+  email      String?   @db.VarChar(191)
+  phone      String?   @db.VarChar(191)
+}
+
+model addresses {
+  id         Int      @id @default(autoincrement())
+  first_name String?  @db.VarChar(100)
+  last_name  String?  @db.VarChar(100)
+  address_1  String?  @db.VarChar(191)
+  address_2  String?  @db.VarChar(191)
+  city       String?  @db.VarChar(50)
+  state      String?  @db.VarChar(50)
+  zip        String?  @db.VarChar(20)
+  country    String?  @db.VarChar(100)
+  client_id  Int?
+  clients    clients? @relation(fields: [client_id], references: [id], onDelete: Cascade)
+}
+
+model payment_terms {
+  id         Int       @id @default(autoincrement())
+  name       String?   @db.VarChar(191)
+  odoo_id    Int?
+  created_at DateTime? @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  active     Boolean?
+}
+
+model categories {
+  id                                 Int        @id @default(autoincrement())
+  name                               String?    @db.VarChar(100)
+  image                              String?    @db.VarChar(255)
+  company_id                         Int?
+  odoo                               Json?      @db.Json
+  odoo_id                            Int?
+  created_at                         DateTime?  @db.Timestamp(6)
+  updated_at                         DateTime?  @db.Timestamp(6)
+  created_by                         Int?
+  updated_by                         Int?
+  companies                          companies? @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  users_categories_created_byTousers users?     @relation("categories_created_byTousers", fields: [created_by], references: [id], onDelete: Cascade)
+  users_categories_updated_byTousers users?     @relation("categories_updated_byTousers", fields: [updated_by], references: [id], onDelete: Cascade)
+}
